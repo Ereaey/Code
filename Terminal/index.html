@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html style="height:100%; margin:0; padding:0;" lang="fr">
+<head>
+		<meta charset="utf-8">
+		<script src="http://lib.triton.fr/js/jquery.js"></script>
+		<script src="console.js"></script>
+		<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="../Cloud_Js/socket.js"></script>
+</head>
+
+<body style="height: 100%; margin: 0;">
+	<div id="console" style="height: 70%; width: 50%; float: left;">
+	</div>
+	<div id="console2" style="height: 70%; width: 50%; float: left; border-left: 2px solid gray;">
+	</div>
+	<div id="console3" style="height: 30%; width: 100%; background-color: black; border-top: 2px solid gray; float: left;">
+	</div>
+	<script>
+		var c = new Console('#console', true, true);
+		c.onCommand(eval);
+
+		c.addStyle("error_red", "color: red",  'content:"e "');
+		c.addFilter("error", "error_red");
+
+		c.addStyle("recu", "color: blue", '');
+		c.addFilter("Message recu", "recu");
+
+		var c1 = new Console("#console2", true, false);
+		var c2 = new Console("#console3", false, false);
+	</script>
+</body>
+
+</html>
