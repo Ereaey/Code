@@ -22,6 +22,7 @@ function Console(div, displayCommands, input_mode)
     else
     {
         this.div.append('<div style="overflow:auto; width:100%; height: 100%;"></div>');
+        this.textarea = this.div.find('div:last');
     }
 
     $('html > head').append('<style>.console_command:focus{ outline: 0px solid transparent; } .console_command br {display: none;} .console_command *{white-space:nowrap; display: inline;}</style>');
@@ -29,31 +30,58 @@ function Console(div, displayCommands, input_mode)
     this.addStyle('default', 'color: white;');
     this.filters = [];
     this.commands = [];
+    this.regexCommand = '';
     this.mode = 0;
     this.command_index = 0;
 }
 
+Console.prototype.setRegexCommand = function(regexCommand)
+{
+    this.regexCommand = regexCommand;
+}
 Console.prototype.addStyle = function(name, css, beforeCss)
 {
     $('html > head').append('<style>.console_' + name + '{' + css + '}.console_' + name + ':before{' + beforeCss + '}</style>');
 }
 
+
+/*
+Console.prototype.simulate = function(text)
+{
+    this.input.html(text);
+    this.onKeyPress({which:13});
+}
+*/
+
 Console.prototype.addLine = function(text, style)
 {
-	if (!this.textarea.is(':empty'))
-		this.textarea.append('<br />');
-	
-	if (!style)
-	{
-    	for	(var index = 0; index < this.filters.length; index++)
-    	{
+    text = text.replace(/\n/g, '<br />');
+
+    if (!this.textarea.is(':empty'))
+        this.textarea.append('<br />');
+    
+    if (!style)
+    {
+        for (var index = 0; index < this.filters.length; index++)
+        {
             if (this.filters[index][0].test(text) === true)
                 style = this.filters[index][1];
         }
-	}
+    }
 
     this.textarea.append('<span class="console_' + style + '">' + text + '</span>');
-	this.textarea.scrollTop(this.textarea[0].scrollHeight);
+    this.textarea.scrollTop(this.textarea[0].scrollHeight);
+}
+
+Console.prototype.setContents = function(text)
+{
+    this.textarea.text(text);
+    this.textarea.html(this.textarea.html().replace(/\n/g, '<br />'));
+}
+
+Console.prototype.getContents = function(text)
+{
+    return this.textarea.html();
 }
 
 Console.prototype.clear = function()
@@ -61,46 +89,48 @@ Console.prototype.clear = function()
     this.textarea.html('');
 }
 
-Console.prototype.infoCommand = function(regex)
+Console.prototype.execCommand = function(text)
 {
-    var result = this.commands[this.commands.length - 1].match(new RegExp(regex));
-    return result;
+    this.commands.push(text);
+
+    if (this.displayCommands)
+        this.addLine(text, 'command');
+    
+    if (this.onCommandCallback)
+        this.onCommandCallback(text);
 }
-Console.prototype.onCommand = function(callback)
+
+Console.prototype.onCommand = function(callback, command, arguments)
 {
     this.onCommandCallback = callback;
+    //var result = this.commands[this.commands.length - 1].match(new RegExp(this.regexCommand));
+    //command = result[0];
+    //arguments = [];
 }
 
 Console.prototype.addFilter = function(filter, style)
 {
     this.filters.push([new RegExp(filter), style]);
 }
+
 Console.prototype.onKeyPress = function(e)
 {
-	if (e.which == 38)
+    if (e.which == 38)
     {
         if (this.mode == 1 && this.command_index > 0)
-        {
             this.command_index -= 1;
-        }
         else
-        {
             this.command_index = this.commands.length - 1;
-        }
 
-	   this.input.html(this.commands[this.command_index]);
+       this.input.html(this.commands[this.command_index]);
        this.mode = 1;
-	}  
+    }  
     else if (e.which == 40)
     {
         if (this.mode == 1 && this.command_index < (this.commands.length - 1))
-        {
             this.command_index += 1;
-        }
         else
-        {
             this.command_index = 0;
-        }
 
        this.input.html(this.commands[this.command_index]);
        this.mode = 1;
@@ -109,21 +139,11 @@ Console.prototype.onKeyPress = function(e)
     {
         this.command_index = 0;
 
-    	var text = this.input.html();
-    	this.input.html('');
-    	
-        this.commands.push(text);
-
-    	if (this.displayCommands)
-    		this.addLine(text, 'command');
-    	
-    	if (this.onCommandCallback)
-    	{
-    		this.onCommandCallback(text);
-    	}
+        var text = this.input.html();
+        this.input.html('');
+        
+        this.execCommand(text);
     }
     else
-    {
         this.mode = 0;
-    }
 }
