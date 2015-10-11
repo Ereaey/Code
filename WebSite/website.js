@@ -1,0 +1,57 @@
+function WebSite(title)
+{
+	this.allLibs = [];
+	this.allLibs.push(["console", '', '<script src="http://lib.triton.fr/js/console.js"></script>']);
+	this.allLibs.push(["jquery", '', '<script src="http://lib.triton.fr/js/jquery.js"></script>']);
+	this.allLibs.push(["boostrap", '<link rel="stylesheet" href="http://lib.triton.fr/css/bootstrap.css" />\n<link rel="stylesheet" href="http://lib.triton.fr/css/bootstrap-theme.css" />', '<script src="http://lib.triton.fr/js/bootstrap.js"></script>']);
+	this.allLibs.push(["favicon", '<link rel="icon" type="image/png" href="icon.png" />', '']);
+	this.allLibs.push(["upload", '', '<script src="http://lib.triton.fr/js/upload.js"></script>']);
+	this.allLibs.push
+
+	this.title = title;
+	this.libs = [];
+}
+
+WebSite.prototype.addLib = function(name)
+{
+	for	(var index = 0; index < this.allLibs.length; index++)
+	{
+        if (this.allLibs[index][0] == name)
+            this.libs.push(this.allLibs[index]);
+    }
+}
+
+WebSite.prototype.removeLib = function(name)
+{
+
+}
+
+WebSite.prototype.getLibs = function()
+{
+	var names = [];
+	for	(var index = 0; index < this.allLibs.length; index++)
+	{
+        names.push(this.allLibs[index][0]);
+    }
+    return names;
+}
+
+function htmlEntities(str) {
+    //return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return String(str).replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+WebSite.prototype.getSource = function()
+{
+	var head = '';
+	var body = '';
+	for	(var index = 0; index < this.libs.length; index++)
+	{
+        head += '<tab>' + this.libs[index][1] + '\n';
+        body += '<tab>' + this.libs[index][2] + '\n';
+    }
+	var source = '<!doctype html>\n<html lang="fr">\n<head>\n<tab><meta charset="utf-8" />\n<tab><title>' + this.title + '</title><tab>\n' + head + '</head>\n<body>\n' + body + '</body>\n</html>';
+	source = htmlEntities(source);
+	source = source.replace(/&lt;tab&gt;/g, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
+	return source;
+}
