@@ -49,7 +49,7 @@ Console.prototype.addStyle = function(name, css, beforeCss)
 
 Console.prototype.addLine = function(text, style)
 {
-    text = text.replace(/\n/g, '<br />');
+    text = String(text).replace(/\n/g, '<br />');
 
     if (!this.textarea.is(':empty'))
         this.textarea.append('<br />');
@@ -94,12 +94,14 @@ Console.prototype.execCommand = function(text)
     {
         if (this.regexCommand != '')
         {
-            this.onCommandCallback(text, command, args);
+            var result = new RegExp(this.regexCommand).exec(text);
+            if (result.length > 0)
+                this.onCommandCallback(text, new String(result[0]), "qsd");
+            else
+                this.addLine("Erreur regex command");
         }
         else
-        {
-            this.onCommandCallback(text);
-        }
+            this.onCommandCallback(text, "", "");
     }
 }
 

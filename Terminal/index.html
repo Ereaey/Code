@@ -25,7 +25,15 @@
 	</div>
 	<script>
 		var c = new Console('#console', true, true);
-		c.onCommand(eval);
+		c.onCommand(test)
+
+		var a = ["dsqd", "qssqd"];
+		function test(function_t, name, ds)
+		{
+			eval(function_t);
+			c.addLine(name);
+			//c.addLine(ds);
+		}
 
 		c.addStyle("error_red", "color: red",  'content:"e "');
 		c.addFilter("error", "error_red");
