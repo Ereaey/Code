@@ -8,10 +8,10 @@ function Console(div, displayCommands, input_mode)
     
     if (input_mode == true)
     {
-        this.div.append('<div style="overflow:auto; width:100%; height:calc(100% - 20px);"></div>');
+        this.div.append('<div style="overflow:auto; padding-left: 3px; width:100%; height:calc(100% - 20px);"></div>');
         this.textarea = this.div.find('div:last');
         
-        this.div.append('<div contenteditable class="console_command" style="white-space:nowrap; width:100%; height:20px; vertical-align: middle;"></div>');
+        this.div.append('<div style="width: 13px; height:20px; vertical-align: middle; padding-left: 3px; float: left;"> > </div><div contenteditable class="console_command" style="white-space:nowrap; width:calc(100% - 13px); float: left;height:20px; vertical-align: middle;"></div>');
         this.input = this.div.find('div:last');
 
         this.input.keydown($.proxy(this.onKeyPress, this));
@@ -21,12 +21,12 @@ function Console(div, displayCommands, input_mode)
     }
     else
     {
-        this.div.append('<div style="overflow:auto; width:100%; height: 100%;"></div>');
+        this.div.append('<div style="overflow:auto; padding-left: 3px; width:100%; height: 100%;"></div>');
         this.textarea = this.div.find('div:last');
     }
 
     $('html > head').append('<style>.console_command:focus{ outline: 0px solid transparent; } .console_command br {display: none;} .console_command *{white-space:nowrap; display: inline;}</style>');
-    this.addStyle('command', '', 'content:"> "');
+    this.addStyle('commandA', '', 'content:"> "');
     this.addStyle('default', 'color: white;');
     this.filters = [];
     this.commands = [];
@@ -45,13 +45,7 @@ Console.prototype.addStyle = function(name, css, beforeCss)
 }
 
 
-/*
-Console.prototype.simulate = function(text)
-{
-    this.input.html(text);
-    this.onKeyPress({which:13});
-}
-*/
+//this.onKeyPress({which:13});
 
 Console.prototype.addLine = function(text, style)
 {
@@ -94,13 +88,22 @@ Console.prototype.execCommand = function(text)
     this.commands.push(text);
 
     if (this.displayCommands)
-        this.addLine(text, 'command');
+        this.addLine(text, 'commandA');
     
     if (this.onCommandCallback)
-        this.onCommandCallback(text);
+    {
+        if (this.regexCommand != '')
+        {
+            this.onCommandCallback(text, command, args);
+        }
+        else
+        {
+            this.onCommandCallback(text);
+        }
+    }
 }
 
-Console.prototype.onCommand = function(callback, command, arguments)
+Console.prototype.onCommand = function(callback)
 {
     this.onCommandCallback = callback;
     //var result = this.commands[this.commands.length - 1].match(new RegExp(this.regexCommand));
